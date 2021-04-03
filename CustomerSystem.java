@@ -15,8 +15,15 @@ class CustomerSystem{
         generateCustomerOption = "2";
         exitCondition = "9";
 
-        // More variables for the main may be declared in the space below
-
+        // THINGS FOR CREDIT CARD VALIDATION (will probably be moved somewhere different once the other methods are ready)
+        System.out.println("input your credit card number:"); // ask for credit card number
+        String numCred = reader.nextLine();
+        if (validateCreditCard(numCred)) {
+            System.out.println("This credit card is valid.");
+        }
+        else {
+            System.out.println("This credit card is invalid.");
+        }
 
         do{
             printMenu();                                    // Printing out the main menu
@@ -64,12 +71,40 @@ class CustomerSystem{
     */
     public static void validatePostalCode(){
     }
-    /*
-    * This method may be edited to achieve the task however you like.
-    * The method may not nesessarily be a void return type
-    * This method may also be broken down further depending on your algorithm
-    */
-    public static void validateCreditCard(){
+
+    /**
+     * Determines whether credit card number is valid or not, using the Luhn check
+     * 
+     * @author - Ayeh Fartousi
+     * @param numCred - the inputted credit card number
+     * @return - true if sum ends with a zero (divisible by ten) and false if not
+     */
+    static boolean validateCreditCard(String numCred) {
+        int lenCred = numCred.length(); // length of the credit card number is found
+        if (lenCred >= 9) { // if credit card number length is sufficient, code will play
+            int sumCred = 0; // sum is preset to zero
+            boolean evenDigit = false; // the boolean of odd/even is set to false because it starts at an odd num
+            
+            for (int i = lenCred - 1; i >= 0; i--) { // goes through the inputted numbers *backwards*
+        
+                int d = Integer.parseInt(numCred.substring(i, i + 1)); // reverses order of digits
+        
+                if (evenDigit == true) { // if the number is even
+                    d = d * 2;  // it is doubled and added together
+                    // LENGTH OF DIGIT
+                    int lenDigit = String.valueOf(d).length();
+                    if (lenDigit > 1) { // if there are more than 1 digits in a number
+                        d = d - 10 + 1; // subtracts 10 from 2 digit numbers to retrieve second digit, and adds 1, which is always going to be the first digit
+                    }
+                } 
+                evenDigit = !evenDigit; // returns value to an 'odd digit' every other number
+            }
+            return (sumCred % 10 == 0);
+        }
+
+        else { // if credit card number is shorter than 9 digits,
+            return false; //it is invalid
+        }
     }
     /*
     * This method may be edited to achieve the task however you like.
