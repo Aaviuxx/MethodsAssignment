@@ -1,0 +1,39 @@
+public static boolean comparePost(String line, String address) throws FileNotFoundException{
+
+        //finding the space of the postcode and splicing the string there so that the code can check the first 3 characters to see if they are real or not
+        String addresplice = (address);
+        String postsplice = addresplice.substring(0,4);
+
+        //Making all the scanner and varibles
+        var fileName = "Post_Code.txt";
+        File text = new File (fileName);
+        Scanner scnr = new Scanner(text);
+        scnr.close();
+        
+        //setting the starting line number for the file reader
+        int lineNumber = 1;
+
+        //reading though the postcode and checking how long the string is 
+        int lenPost = address.length();
+
+        // if the length is over or equal 3 characters then run the checking processe
+        if (lenPost >= 3){
+            
+            //look though the .txt file
+            while(scnr.hasNextLine()){
+            line = scnr.nextLine();
+            lineNumber++;
+            }
+
+            //a boolean comparison to see if any of the lines contain the information the user entered in
+            while(line != null){
+                if (line.contains(postsplice)){
+                    return true;
+                }
+            }
+        }
+        
+        // if not then return
+        return false;
+            
+    }
