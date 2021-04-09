@@ -1,8 +1,5 @@
 // Throughout this project, the use of data structures are not permitted such as methods like .split and .toCharArray
 
-
-
-
 import java.util.Scanner;
 // More packages may be imported in the space below
 import java.io.BufferedReader;
@@ -10,15 +7,17 @@ import java.io.File;
 import java.io.FileReader; 
 import java.io.FileWriter; 
 import java.io.PrintWriter;
+import java.io.FileNotFoundException;
 
-class DownloadedCustomerSystem {
+class CustomerSystem {
     static String nameFirst;
     static String nameLast;
     static String city;
     static String address;
     static String numCred;
+    static String line;
 
-    public static void main(String[] args){
+    public static void main(String[] args) throws FileNotFoundException {
         // Please do not edit any of these variables
         Scanner reader = new Scanner(System.in);
         String userInput, enterCustomerOption, generateCustomerOption, exitCondition;
@@ -59,23 +58,34 @@ class DownloadedCustomerSystem {
         .concat("Enter menu option (1-9)\n")
         );
     }
-    /*
-    * This method may be edited to achieve the task however you like.
-    * The method may not necessarily be a void return type
-    * This method may also be broken down further depending on your algorithm
-    */
-    public static void enterCustomerInfo() {
+   
+    /**
+     * Asks user for information and asks for reinput if input is invalid
+     * 
+     * @author Tony Cheng
+     * @throws FileNotFoundException
+     */
+    public static void enterCustomerInfo() throws FileNotFoundException {
         Scanner scanner = new Scanner(System.in);
         System.out.println("Please Enter Your Information as below: ");
-        System.out.println("First Name: ");
+        System.out.print("First Name: ");
         nameFirst = scanner.nextLine();
         System.out.print("Last Name: ");
         nameLast = scanner.nextLine();
         System.out.print("City: ");
         city = scanner.nextLine();
-        System.out.println("Address: ");
-        address = scanner.nextLine();
-
+        System.out.print("Address: ");
+        boolean isAddressValid = false;
+        while (!isAddressValid) {
+            address = scanner.nextLine();
+            isAddressValid = validatePostCode(address, line);
+            if (isAddressValid) {
+                break;
+            } 
+            else {
+                System.out.println("Please enter a valid address!");
+            }
+        }
         System.out.println("Credit Card Number: ");
         boolean isCreditValid = false;
         while (!isCreditValid) {
@@ -83,27 +93,66 @@ class DownloadedCustomerSystem {
             isCreditValid = validateCreditCard(numCred);
             if (isCreditValid) {
                 break;
-            } else {
+            } 
+            else {
                 System.out.println("Please enter a valid credit card number!");
             }
         }
         scanner.close();
     }
 
-    /*
-    * This method may be edited to achieve the task however you like.
-    * The method may not necessarily be a void return type
-    * This method may also be broken down further depending on your algorithm
-    */
-    public static void validatePostalCode(){
-        System.out.println("validatePostalCode");
-    }
-    /*
-    * This method may be edited to achieve the task however you like.
-    * The method may not necessarily be a void return type
-    * This method may also be broken down further depending on your algorithm
-    */
+    /**
+     * THis method checks if the postal code is valid or not
+     * 
+     * @author Tony Cheng
+     * @param address String address, line - string vars used for storing the postcode and information thats is on the line of the .txt file
+     * @param line true if the first three letter of the postcode matches up with any of them in the .txt file
+     * @return true if postal code is valid, false if it is not
+     */
+    public static boolean validatePostCode(String address, String line) throws FileNotFoundException{
+        //reading though the postcode and checking how long the string is 
+        int lenPost = address.length();
 
+        //finding the space of the postcode and splicing the string there so that the code can check the first 3 characters to see if they are real or not
+        String addresplice = (address);
+        String postsplice = addresplice.substring(0,4);
+
+        //Stating the scanner and telling the scanner which file to read
+        var fileName = "Post_Code.txt";            //The file is .txt because I changed it on my end since .cvs was not working for me
+        File text = new File (fileName);
+        Scanner scnr = new Scanner(text);
+        scnr.close();
+
+        //setting the starting line number for the file reader
+        int lineNumber = 1;
+
+        // if the length is over or equal 3 characters then run the checking processe
+        if (lenPost >= 3){
+
+            //look though the .txt file
+            while(scnr.hasNextLine()){
+            line = scnr.nextLine();
+            lineNumber++;
+            }
+
+        }
+        //a boolean comparison to see if any of the lines contain the information the user entered in
+        while(line != null){
+            if (line.contains(postsplice)){
+                return true;
+            }
+        }
+        // if not then return
+        return false;
+    }
+    
+    /**
+     * Validates Credit Card number 
+     * 
+     * @author Ayeh
+     * @param numCred credit card number inputted in enterCustomerInfo
+     * @return true if credit card number is valid, false if it is not
+     */
     public static boolean validateCreditCard(String numCred){
         int lenCred = numCred.length(); // length of the credit card number is found
         if (lenCred >= 9) { // if credit card number length is sufficient, code will play
@@ -137,13 +186,12 @@ class DownloadedCustomerSystem {
         }
     }
 
-    /*
-    * This method may be edited to achieve the task however you like.
-    * The method may not nesessarily be a void return type
-    * This method may also be broken down further depending on your algorithm
-    */
+    /**
+     * Generates a new file to store customer information and assigns a unique ID number starting from 1
+     * 
+     * @Ayeh
+     */
     public static void generateCustomerDataFile(){
-        System.out.println(nameFirst);
         // F I L E   C R E A T I O N 
         File file = new File("CustomerDataFile.csv");
         try {
